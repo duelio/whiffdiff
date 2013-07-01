@@ -1,0 +1,4 @@
+whiffdiff
+=========
+
+Image differ
