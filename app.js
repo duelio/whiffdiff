@@ -59,12 +59,12 @@ app.post('/diff/:id', function(req, res) {
     }
 	else {
 	  fs.writeFile(idPath+"_diff", data, function (err) {
-	    execFile('D:\\Program Files (x86)\\ImageMagick-6.8.6-Q16\\compare.exe', ['-metric','AE', idPath, idPath+"_diff", 'diff.png'], function(err,tmp,difference){
+	    execFile(process.env.IMAGE_MAGICK_HOME+'/compare.exe', ['-metric','AE', idPath, idPath+"_diff", 'diff.png'], function(err,tmp,difference){
 		  if (difference == 0)
 		    res.json({ status: 'same' })
 		  else
 		  {
-			execFile('D:\\Program Files (x86)\\ImageMagick-6.8.6-Q16\\convert.exe', ['-delay','25', idPath, idPath+"_diff", '-loop', '0', __dirname + "/public/images/"+req.params.id+".gif"], function(err){		  
+			execFile(process.env.IMAGE_MAGICK_HOME+'/convert.exe', ['-delay','25', idPath, idPath+"_diff", '-loop', '0', __dirname + "/public/images/"+req.params.id+".gif"], function(err){		  
 			  res.json({ status: 'different', difference:difference })
 			});
 		  }
