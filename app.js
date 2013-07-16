@@ -35,25 +35,33 @@ app.get('/diff/:id', function(req, res) {
   if (fs.existsSync(__dirname + "/public/images/"+req.params.id+"_diff")) {
     res.send("<html><body><img src='/images/"+req.params.id+"'/>&nbsp;<img src='/images/"+req.params.id+"_diff'/>&nbsp;<img src='/images/"+req.params.id+".gif'/></body><br/><a href='/diff/"+req.params.id+"/accept'>Accept changes</a></html>");
   }
+  if (fs.existsSync(__dirname + "/public/images/"+req.params.id+"_new")) {
+    res.send("<html><body><img src='/images/"+req.params.id+"_new'/></body><br/><a href='/diff/"+req.params.id+"/accept'>Accept changes</a></html>");
+  }  
   else 
     res.send(404);
 });
 
 app.get('/diff/:id/accept', function(req, res) {  
   if (fs.existsSync(__dirname + "/public/images/"+req.params.id+"_diff")) {
-	fs.unlinkSync(__dirname + "/public/images/"+req.params.id);
-	fs.renameSync(__dirname + "/public/images/"+req.params.id+"_diff", __dirname + "/public/images/"+req.params.id);
-	res.send("Accepted!");
+	  fs.unlinkSync(__dirname + "/public/images/"+req.params.id);
+	  fs.renameSync(__dirname + "/public/images/"+req.params.id+"_diff", __dirname + "/public/images/"+req.params.id);
+	  res.send("Accepted!");
   }
+  else if (fs.existsSync(__dirname + "/public/images/"+req.params.id+"_new")) {
+	  fs.renameSync(__dirname + "/public/images/"+req.params.id+"_new", __dirname + "/public/images/"+req.params.id);
+	  res.send("Accepted!");
+  }  
   else
     res.send(404);
 });
 
 app.post('/diff/:id', function(req, res) {
+  console.log(req.files.image.path);
   fs.readFile(req.files.image.path, function (err, data) {	  	  
     var idPath = __dirname + "/public/images/"+req.params.id;
     if (!fs.existsSync(idPath)) {
-      fs.writeFile(idPath, data, function (err) {
+      fs.writeFile(idPath+"_new", data, function (err) {
         res.json({ status: 'new' })
       });
     }
